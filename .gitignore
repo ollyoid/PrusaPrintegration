@@ -1,0 +1,35 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# VS Code settings
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Test files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generated files
+*.gcode
+*.gcode.filtered
+*.drl
+*.stl
+
+# Exceptions (add specific files you want to keep)
+# !specific_file.gcode
