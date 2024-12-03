@@ -18,9 +18,10 @@
 3. Activate the virtual environment `source ./venv/bin/activate`
 4. Install wx python https://wxpython.org/pages/downloads/
 5. Install remaining dependencies : `pip install -r requirements.txt`
-6. Import PrusaSlicer config `File>Import>Import Config...` and browse to porject directory to select `config.ini`
-7. Enable "Expert mode" from top right corner
-8. Set PrusaSlicer Post-Processing path `Print Settings>Output options>Post-processing scripts` to `printegration.sh` 
+6. Make the script executable: `chmod +x printegration.sh`
+7. Import PrusaSlicer config `File>Import>Import Config...` and browse to porject directory to select `config.ini`
+8. Enable "Expert mode" from top right corner
+9. Set PrusaSlicer Post-Processing path `Print Settings>Output options>Post-processing scripts` to `printegration.sh` 
 
 
 ## Usage

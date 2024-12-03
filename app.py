@@ -411,6 +411,20 @@ class PrintegrateFrame(wx.Frame):
                 print("Updating tool choices...")
                 tools = self.get_gcode_tools()
                 print(f"Found tools: {tools}")
+                
+                # Check if there's only one tool
+                if len(tools) == 1:
+                    dlg = wx.MessageDialog(self,
+                        "Only one tool detected in the G-code file.\n"
+                        "This application requires multiple tools to function properly.",
+                        "Single Tool Error",
+                        wx.OK | wx.ICON_ERROR)
+                    dlg.ShowModal()
+                    dlg.Destroy()
+                    # Close the application
+                    self.Close()
+                    return
+                
                 self.conductive_choice.Clear()
                 self.conductive_choice.Append("None")  # Add None option
                 for tool in tools:
@@ -473,6 +487,7 @@ class PrintegrateFrame(wx.Frame):
 
         def on_movement_change(self, event):
             """Handle movement slider changes"""
+
             try:
                 movement = self.movement_slider.GetValue()
                 current_layer = self.layer_slider.GetValue()
@@ -562,6 +577,17 @@ class PrintegrateFrame(wx.Frame):
         def on_printegrate(self, event):
             """Handle Printegrate button click - print drill hole coordinates"""
             print("\n=== Drill Hole Coordinates ===")
+
+            # Check if a marker file is loaded
+            if not self.drl_path:
+                dlg = wx.MessageDialog(self,
+                    "No marker file loaded.\n"
+                    "Please load a .drl file before attempting to printegrate.",
+                    "No Marker File",
+                    wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return
 
             # Make sure a G-code file is loaded
             if not hasattr(self.gcview, 'model') or not self.gcview.model:
@@ -881,12 +907,11 @@ class PrintegrateFrame(wx.Frame):
 
         def update_move_slider(self):
             """Update the movement slider based on current layer"""
-            if hasattr(self.gcview, 'model') and self.gcview.model and hasattr(self.gcview.model, 'all_layers'):
-                current_layer = self.gcview.model.all_layers[0]
+            if hasattr(self.gcview.model, 'gcode'):
+                current_layer = self.gcview.model.gcode.all_layers[0]
                 moves_count = len([line for line in current_layer if hasattr(line, 'is_move') and line.is_move])
-                self.movement_slider.SetMax(moves_count)
+                self.movement_slider.SetMax(moves_count - 1)
                 self.movement_slider.SetValue(0)
-                print(f"Setting movement slider range: 0-{moves_count}")
 
         def on_click(self, event):
             """Handle click events from gcview"""
