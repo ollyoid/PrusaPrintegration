@@ -10,13 +10,13 @@
 6. Enable "Expert mode" from top right corner
 6. Set PrusaSlicer Post-Processing path `Print Settings>Output options>Post-processing scripts` to `printegration.bat` (Windows only for now)
 
-## Installation Linux
+## Installation Linux/MacOs
 > [!WARNING]  
-> This doesn't seem to be currently working the main model display is not shown.
+> This doesn't seem to be currently working with graphical elements not rendering properly
 1. Clone the repository: `https://github.com/ollyoid/PrusaPrintegration.git`
 2. Create a virtual environment: `python -m venv venv`
 3. Activate the virtual environment `source ./venv/bin/activate`
-4. Install wx python https://wxpython.org/pages/downloads/
+4. (only on linux) Install wx python https://wxpython.org/pages/downloads/
 5. Install remaining dependencies : `pip install -r requirements.txt`
 6. Make the script executable: `chmod +x printegration.sh`
 7. Import PrusaSlicer config `File>Import>Import Config...` and browse to porject directory to select `config.ini`
