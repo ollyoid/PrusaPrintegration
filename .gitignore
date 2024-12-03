@@ -28,8 +28,6 @@ htmlcov/
 # Generated files
 *.gcode
 *.gcode.filtered
-*.drl
-*.stl
 
 # Exceptions (add specific files you want to keep)
 # !specific_file.gcode
