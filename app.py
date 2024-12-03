@@ -743,6 +743,7 @@ class PrintegrateFrame(wx.Frame):
             print("\nGenerated G-code for holes:")
             
             combined_gcode = [line for line in gcode_to.split('\n')]
+            combined_gcode.extend(["M601 \n"])
             combined_gcode.extend(hole_gcode)
             combined_gcode.extend([line for line in gcode_from.split('\n')])
 
