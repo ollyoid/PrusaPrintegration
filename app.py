@@ -244,6 +244,7 @@ class PrintegrateFrame(wx.Frame):
             """Load and parse a drill file"""
             print("\n=== Starting Drill File Load ===")
             try:
+                self.drl_path = filepath
                 # Clear existing drill points
                 print("Clearing existing drill points...")
                 self.marker.clear_drill_points()
@@ -446,14 +447,7 @@ class PrintegrateFrame(wx.Frame):
                 traceback.print_exc()
         
             # Wait for model to be initialized before updating colors
-            def update_after_init():
-                if not hasattr(self.gcview.model, 'vertex_color_buffer'):
-                    wx.CallLater(100, update_after_init)
-                    return
-                self.gcview.widget.Refresh()
-                self.on_conductive_tool_select(None)
-        
-            wx.CallLater(100, update_after_init)
+            self.update_colors_after_load()
 
         def get_gcode_tools(self):
             """Extract all unique tool numbers from the loaded G-code"""
@@ -787,8 +781,8 @@ class PrintegrateFrame(wx.Frame):
             self.gcview.addfile(GCode(gcode_lines))
             self.on_layer_change(None)
             
-            ## Save the model with the new g-code
-            # self.savefile()
+            # Reapply colors after reloading
+            self.update_colors_after_load()
 
         def generate_gcode_for_holes(self, holes, last_pos, extrusion_amount=0.48, retraction_amount=7.5, print_retraction=2.5):
             """Generate G-code commands for drilling holes
@@ -949,3 +943,13 @@ class PrintegrateFrame(wx.Frame):
             
             except Exception as e:
                 wx.MessageBox(f"Error saving G-code: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
+
+        def update_colors_after_load(self):
+            """Update colors after model is loaded"""
+            def update_colors():
+                if hasattr(self.gcview.model, 'vertex_color_buffer'):
+                    self.gcview.widget.Refresh()
+                    self.on_conductive_tool_select(None)
+                else:
+                    wx.CallLater(100, update_colors)
+            wx.CallLater(100, update_colors)
