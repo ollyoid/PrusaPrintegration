@@ -115,6 +115,11 @@ class PrintegrateFrame(wx.Frame):
             printegrate_btn.Bind(wx.EVT_BUTTON, self.on_printegrate)
             browser_sizer.Add(printegrate_btn, 0, wx.ALL, 5)
 
+            # Add Reset button
+            reset_btn = wx.Button(browser_panel, label="Reset")
+            reset_btn.Bind(wx.EVT_BUTTON, self.on_reset)
+            browser_sizer.Add(reset_btn, 0, wx.ALL, 5)
+
             # Add Save button
             save_btn = wx.Button(browser_panel, label="Save")
             save_btn.Bind(wx.EVT_BUTTON, self.on_save)
@@ -559,11 +564,11 @@ class PrintegrateFrame(wx.Frame):
                 self.gcview.model.color_tool3 = (1.0, 0., 0.62, 0.6)  # Pink
                 self.gcview.model.color_tool4 = (0., 1.0, 0.58, 0.6)  # Green
                 
-                # If a tool is selected (not None), set it to black
+                # If a tool is selected (not None), set it to very dark grey
                 if tool != "None":
                     tool_num = int(tool[1:])  # Extract number from "T1" etc
-                    setattr(self.gcview.model, f'color_tool{tool_num}', (0, 0, 0, 1.0))
-                
+                    setattr(self.gcview.model, f'color_tool{tool_num}', (0.15, 0.15, 0.15, 1.0))  # Very dark grey
+        
                 # Force redraw
                 self.gcview.model.update_colors()
                 self.gcview.widget.Refresh()
@@ -953,3 +958,10 @@ class PrintegrateFrame(wx.Frame):
                 else:
                     wx.CallLater(100, update_colors)
             wx.CallLater(100, update_colors)
+
+        def on_reset(self, event):
+            """Handle Reset button click - reload original G-code"""
+            if self.gcode_path and os.path.exists(self.gcode_path):
+                self.load_gcode(self.gcode_path)
+            else:
+                wx.MessageBox("No G-code file loaded to reset to.", "Error", wx.OK | wx.ICON_ERROR)
