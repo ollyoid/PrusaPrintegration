@@ -1,6 +1,8 @@
 # PrusaPrintegration
 > GCode post-processor for integrating PCBs into 3D prints
 
+![Screenshot of PrusaPrintegration](img/screenshot.png)
+
 ## Installation Windows
 1. Clone the repository: `https://github.com/ollyoid/PrusaPrintegration.git`
 2. Create a virtual environment: `python -m venv venv`

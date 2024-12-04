@@ -247,50 +247,33 @@ class PrintegrateFrame(wx.Frame):
 
         def load_drill_file(self, filepath):
             """Load and parse a drill file"""
-            print("\n=== Starting Drill File Load ===")
             try:
                 self.drl_path = filepath
-                # Clear existing drill points
-                print("Clearing existing drill points...")
                 self.marker.clear_drill_points()
-                print("Drill points cleared")
                 
-                # Clear and reset tool choice, keeping None as first option
-                print("Resetting tool choice...")
+                # Reset tool choices
                 self.tool_choice.Clear()
                 self.tool_choice.Append("None")
-                self.tool_choice.Enable(False)
-                print("Tool choice reset")
                 
-                print("Parsing drill file...")
+                # Parse and load tools
                 tools_data = self.parse_drill_file(filepath)
                 if not tools_data:
-                    print("No tools data found")
                     return
-                print(f"Found {len(tools_data)} tools")
                 
                 # Add points for each tool
                 for tool_name, data in tools_data.items():
                     if data['points']:  # Only add tools that have points
-                        print(f"Adding points for {tool_name}")
                         self.marker.add_drill_points(tool_name, data['points'], data['size'])
                         self.tool_choice.Append(f"{tool_name} ({data['size']}mm)")
-                        
-                self.tool_choice.Enable(True)
-                if self.tool_choice.GetCount() > 1:  # If we have tools besides None
-                    print("Setting initial tool selection")
-                    self.tool_choice.SetSelection(1)  # Select first actual tool
-                    self.on_tool_select(None)  # Update current tool
-                else:
-                    self.tool_choice.SetSelection(0)  # Select None if no tools
                 
-                print("Drill file loaded successfully")
+                # Select first tool if available
+                self.tool_choice.Enable(True)
+                self.tool_choice.SetSelection(1 if self.tool_choice.GetCount() > 1 else 0)
+                if self.tool_choice.GetSelection() > 0:
+                    self.on_tool_select(None)
                 
             except Exception as e:
-                print(f"Error loading drill file: {e}")
                 wx.MessageBox(f"Error loading drill file: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
-        
-            print("=== Drill File Load Complete ===\n")
 
         def create_file_dialog(self):
             """Create a file dialog without showing it"""
@@ -305,57 +288,19 @@ class PrintegrateFrame(wx.Frame):
 
         def on_browse(self, event):
             """Handle browse button click"""
-            print("\n=== Starting Browse Operation ===")
-            print(f"Active windows: {len(wx.GetTopLevelWindows())}")
-            print(f"Is main window shown: {self.IsShown()}")
-            
-            # Try to ensure clean state before showing dialog
             try:
-                print("Preparing for dialog...")
-                # Force a refresh of the main window
-                self.Refresh()
-                self.Update()
-                # Process any pending events
-                wx.Yield()
-                
-                print("Creating dialog...")
-                dlg = wx.FileDialog(
-                    parent=None,  # Try with no parent
+                with wx.FileDialog(
+                    parent=self,
                     message="Choose a drill file",
                     defaultDir=os.getcwd(),
-                    defaultFile="",
                     wildcard="Drill files (*.drl)|*.drl",
                     style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
-                )
-                print("Dialog created successfully")
-                
-                try:
-                    # Process any pending events again
-                    wx.Yield()
-                    print("Showing modal dialog...")
-                    result = dlg.ShowModal()
-                    print(f"Dialog result: {result}")
-                    
-                    if result == wx.ID_OK:
-                        filepath = dlg.GetPath()
-                        print(f"Selected file: {filepath}")
-                        # Use CallAfter to process the file after dialog is fully closed
-                        wx.CallAfter(self._process_drill_file, filepath)
-                    
-                except Exception as e:
-                    print(f"Error during dialog operation: {e}")
-                    wx.MessageBox(f"Error in dialog: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
-                finally:
-                    print("Destroying dialog...")
-                    dlg.Destroy()
-                    print("Dialog destroyed")
-                    
+                ) as dlg:
+                    if dlg.ShowModal() == wx.ID_OK:
+                        wx.CallAfter(self._process_drill_file, dlg.GetPath())
+                        
             except Exception as e:
-                print(f"Error creating dialog: {e}")
-                wx.MessageBox(f"Error creating dialog: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
-            
-            print(f"Final active windows: {len(wx.GetTopLevelWindows())}")
-            print("=== Browse Operation Complete ===\n")
+                wx.MessageBox(f"Error selecting file: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
 
         def _process_drill_file(self, filepath):
             """Process drill file after dialog is closed"""
