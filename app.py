@@ -674,7 +674,8 @@ class PrintegrateFrame(wx.Frame):
 
                 # Populate the template for changing FROM the conductive tool back to the original tool
                 gcode_from = template.replace('[LAYER_HEIGHT]', str(current_layer_height))
-                gcode_from = gcode_from.replace('[RETRACT]', str(retract_amount))
+                # gcode_from = gcode_from.replace('[RETRACT]', str(retract_amount))
+                gcode_from = gcode_from.replace('[RETRACT]', str(0))
                 gcode_from = gcode_from.replace('[FROM_TOOL]', str(conductive_tool))
                 gcode_from = gcode_from.replace('[TO_TOOL]', str(current_tool_number))
                 gcode_from = gcode_from.replace('[TO_TOOL_TEMP]', str(from_temp))
@@ -748,7 +749,7 @@ class PrintegrateFrame(wx.Frame):
             gcode = []
             move_above_height = 5 + z_start  # Move 5mm above the last Z-height
 
-            z_down = round(z_start-0.05, 4)
+            z_down = round(z_start-0.45, 4)
 
             # Set the temp a bit higher
             gcode.append(f"M104 S240")

@@ -158,6 +158,9 @@ class MarkerActor:
                 # Vertical line
                 glVertex3f(0, -size/4, 0)
                 glVertex3f(0, size/4, 0)
+                # Vertical line in Z
+                glVertex3f(0, 0, -size/4)
+                glVertex3f(0, 0, size/4)
                 glEnd()
                 
                 glPopMatrix()

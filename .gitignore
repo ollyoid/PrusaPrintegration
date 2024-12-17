@@ -29,5 +29,8 @@ htmlcov/
 *.gcode
 *.gcode.filtered
 
+# Exceptions
+!toolchange.gcode
+
 # Exceptions (add specific files you want to keep)
 # !specific_file.gcode
