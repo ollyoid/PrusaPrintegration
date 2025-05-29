@@ -1,6 +1,9 @@
 # PrusaPrintegration
 > GCode post-processor for integrating PCBs into 3D prints
 
+> [!WARNING]  
+> This is code for a research project and is rough around the edges.
+
 ![Screenshot of PrusaPrintegration](img/screenshot.png)
 
 ## Installation Windows
