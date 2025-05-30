@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vertical Voltage Bar Chart</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    #connectBtn {
+      background-color: #007bff;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 2rem;
+    }
+
+    .chart {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      align-items: flex-end;
+      height: 200px;
+      margin-bottom: 1rem;
+    }
+
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bar {
+      width: 24px;
+      background: linear-gradient(to top, #2193b0, #6dd5ed);
+      border-radius: 6px 6px 0 0;
+      transition: height 0.3s ease;
+    }
+
+    .label {
+      margin-top: 0.4rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .voltage {
+      display: none; /* Hidden */
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tangible Habit Tracker</h1>
+  <button id="connectBtn">Connect</button>
+  <div class="chart" id="chart"></div>
+
+  <script>
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const chart = document.getElementById("chart");
+
+    const state = {};
+    const maxLevel = 5;
+    const maxHeight = 160; // px
+
+    // Create bars and store references
+    days.forEach(day => {
+      const container = document.createElement("div");
+      container.className = "bar-container";
+
+      const voltage = document.createElement("div");
+      voltage.className = "voltage";
+      voltage.textContent = "";
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.height = "0px";
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = day;
+
+      container.append(voltage, bar, label);
+      chart.appendChild(container);
+
+      state[day] = { bar, voltage };
+    });
+
+    // Function to manually set a bar value
+    function setBarValue(day, level) {
+      if (!state[day] || level < 0 || level > maxLevel) return;
+      const height = (level / maxLevel) * maxHeight;
+      state[day].bar.style.height = `${height}px`;
+      // Optionally, you can show or hide voltage text again here
+      // state[day].voltage.textContent = `${level} bars`;
+    }
+
+    document.getElementById("connectBtn").addEventListener("click", async () => {
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 115200 });
+
+      const decoder = new TextDecoderStream();
+      const inputDone = port.readable.pipeTo(decoder.writable);
+      const reader = decoder.readable.getReader();
+
+      let buffer = "";
+
+      while (true) {
+        setBarValue("Tue", 2)
+        setBarValue("Wed", 3)
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += value;
+
+        let lines = buffer.split("\n");
+        buffer = lines.pop();
+
+        lines.forEach(line => {
+          const match = line.match(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun):\s+(\|*)\s+\(([\d.]+)V\)/);
+          if (match) {
+            const [, day, bars] = match;
+            const level = bars.length;
+
+            setBarValue(day, level); // Use new function
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

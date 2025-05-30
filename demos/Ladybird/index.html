@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Key Emoji and Volume Display</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    #display {
+      font-size: 10rem;
+      transition: opacity 0.3s ease;
+    }
+
+    .fade {
+      opacity: 0;
+    }
+
+    #volume-display {
+      font-size: 2rem;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #555;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="display">⌨️</div>
+  <div id="volume-display"></div>
+  <div class="progress-bar">
+    <span id="progress" style="width: 50%; background-color: #4CAF50;"></span>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const volumeDisplay = document.getElementById('volume-display');
+    const progressBar = document.getElementById('progress');
+
+    let volume = 50; // Fake initial volume (50%)
+    
+    const emojiMap = {
+      ' ': '⏯️',               // Spacebar → Play/Pause
+      'ArrowRight': '⏩',       // Fast Forward
+      'ArrowLeft': '⏪',        // Rewind
+      'ArrowUp': '🔊',          // Volume Up
+      'ArrowDown': '🔉',        // Volume Down
+      '+': '➕',                // Plus
+      '-': '➖',                // Minus
+      'Control': '🎛️',         // Control Key
+      'MediaPlayPause': '⏯️',
+      'MediaTrackNext': '⏭️',
+      'MediaTrackPrevious': '⏮️',
+      'MediaStop': '⏹️',
+      'AudioVolumeUp': '🔊',
+      'AudioVolumeDown': '🔉',
+      'VolumeMute': '🔇'
+    };
+
+    document.addEventListener('keydown', (e) => {
+      let emoji = emojiMap[e.key] || e.key.toUpperCase();
+      display.textContent = emoji;
+
+      // Update volume for volume up/down keys
+      if (e.key === 'AudioVolumeUp' && volume < 100) {
+        volume += 2; // Increase volume by 5%
+      } else if (e.key === 'AudioVolumeDown' && volume > 0) {
+        volume -= 2; // Decrease volume by 5%
+      }
+
+      // Update the volume display
+      volumeDisplay.textContent = ``;
+      progressBar.style.width = `${volume}%`;
+
+      // Add fade effect
+      display.classList.remove('fade');
+      void display.offsetWidth; // Force reflow
+      setTimeout(() => display.classList.add('fade'), 1000);
+    });
+  </script>
+</body>
+</html>
